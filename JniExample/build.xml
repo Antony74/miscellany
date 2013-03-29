@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<project name="JniExample" default="build">
+
+  <property environment="env"/>
+
+  
+  <target name="clean">
+    <delete file="JniExample.class" />
+    <delete file="JniExample.dll" />
+    <delete file="JniExample.h" />
+  </target>
+
+
+  <target name="build">
+
+    <javac
+        srcdir="."
+        destdir="."
+        includeantruntime="false"/>
+
+    <javah
+        class="JniExample"
+        outputFile="JniExample.h"/>
+
+    <exec executable="g++">
+      <arg value="-Wall"/>
+      <arg value="-D_JNI_IMPLEMENTATION_"/>
+      <arg value="-Wl,--kill-at"/>
+      <arg value="-I${env.JAVA_HOME}/include"/>
+      <arg value="-I${env.JAVA_HOME}/include/win32"/>
+      <arg value="-shared"/>
+      <arg value="JniExample.cpp"/>
+      <arg value="-o"/>
+      <arg value="JniExample.dll"/>
+    </exec>
+
+  </target>
+
+  
+  <target name="run" depends="build">
+    <java classname="JniExample" classpath="."/>
+  </target>
+
+  
+</project>
