@@ -6,7 +6,7 @@
   
   <target name="clean">
     <delete file="JniExample.class" />
-    <delete file="JniExample.dll" />
+    <delete file="JniExample.so" />
     <delete file="JniExample.h" />
   </target>
 
@@ -20,18 +20,26 @@
 
     <javah
         class="JniExample"
-        outputFile="JniExample.h"/>
+        outputFile="JniExample.h"
+        classpath="."/>
+
+    <dirset id="dirset.dir" dir="${env.JAVA_HOME}/include" includes="*"/>
+    <pathconvert property="dir" pathsep=" " refid="dirset.dir"/>
+
+    <condition property="windows.arg" value="-Wl,--kill-at" else="">
+      <os family="windows" />
+    </condition>
 
     <exec executable="g++">
       <arg value="-Wall"/>
       <arg value="-D_JNI_IMPLEMENTATION_"/>
-      <arg value="-Wl,--kill-at"/>
+      <arg value="${windows.arg}"/>
       <arg value="-I${env.JAVA_HOME}/include"/>
-      <arg value="-I${env.JAVA_HOME}/include/win32"/>
+      <arg value="-I${dir}"/>
       <arg value="-shared"/>
       <arg value="JniExample.cpp"/>
       <arg value="-o"/>
-      <arg value="JniExample.dll"/>
+      <arg value="JniExample.so"/>
     </exec>
 
   </target>

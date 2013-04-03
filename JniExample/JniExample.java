@@ -5,7 +5,7 @@ public class JniExample
  
   public static void main(String[] args)
   {
-     System.loadLibrary("JniExample");
+     System.load(System.getProperty("user.dir") + "/JniExample.so");
      JniExample jniExample = new JniExample();
      String s = jniExample.doSomething("Hello World");
 
