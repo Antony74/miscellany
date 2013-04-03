@@ -26,7 +26,7 @@
     <dirset id="dirset.dir" dir="${env.JAVA_HOME}/include" includes="*"/>
     <pathconvert property="dir" pathsep=" " refid="dirset.dir"/>
 
-    <condition property="windows.arg" value="-Wl,--kill-at" else="">
+    <condition property="windows.arg" value="-Wl,--kill-at" else="-shared">
       <os family="windows" />
     </condition>
 
