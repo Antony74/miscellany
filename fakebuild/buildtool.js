@@ -5,34 +5,12 @@ var nActiveBuilds = 0;
 var buildProjects = {};
 var buildQueue = [];
 
-function createStatusObject()
-{
-    var NOTBUILDING = 0;
-    var QUEUED = 1;
-    var BUILDING = 2;
-    var BUILT = 3;
-
-    var status =
-    {
-        value: NOTBUILDING,
-        isNotBuilding: function() {return this.value == NOTBUILDING;},
-        isQueued:      function() {return this.value == QUEUED;},
-        isBuilding:    function() {return this.value == BUILDING;},
-        isBuilt:       function() {return this.value == BUILT;},
-        setQueued:     function() {this.value = QUEUED;},
-        setBuilding:   function() {this.value = BUILDING;},
-        setBuilt:      function() {this.value = BUILT;},
-    }
-
-    return status;
-}
-
 function queueProject(proj)
 {
-    if (proj.status.isNotBuilding() && proj.depends.length == 0)
+    if (proj.isQueued == false && proj.depends.length == 0)
     {
         buildQueue.push(proj);
-        proj.status.setQueued();
+        proj.isQueued = true;
 //        console.log(proj.name + " queued");
     }
 }
@@ -62,13 +40,11 @@ function buildProject(proj)
 {
     ++nActiveBuilds;
     console.log("building " + proj.name);
-    proj.status.setBuilding();
 
     proj.build(function()
     {
         --nActiveBuilds;
         console.log("done building " + proj.name);
-        proj.status.setBuilt();
 
         queueDependants(proj);
         serviceBuildQueue();
@@ -95,7 +71,7 @@ function build(_buildProjects)
     {
         proj = buildProjects[projName];
         proj.name = projName;
-        proj.status = createStatusObject();
+        proj.isQueued = false;
         proj.usedBy = [];
     }
 
