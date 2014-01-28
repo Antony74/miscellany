@@ -1,4 +1,8 @@
 
+var fs = require('fs');
+var child_process = require('child_process');
+var readline = require('readline');
+
 var nMaxParallel = 4;
 var nActiveBuilds = 0;
 
@@ -11,7 +15,6 @@ function queueProject(proj)
     {
         buildQueue.push(proj);
         proj.isQueued = true;
-//        console.log(proj.name + " queued");
     }
 }
 
@@ -31,7 +34,6 @@ function queueDependants(proj)
             }
         }
 
-//        console.log("Attempting to queue " + dependantProj.name);
         queueProject(dependantProj);
     }
 }
@@ -39,12 +41,10 @@ function queueDependants(proj)
 function buildProject(proj)
 {
     ++nActiveBuilds;
-    console.log("building " + proj.name);
 
     proj.build(function()
     {
         --nActiveBuilds;
-        console.log("done building " + proj.name);
 
         queueDependants(proj);
         serviceBuildQueue();
@@ -91,7 +91,78 @@ function build(_buildProjects)
     serviceBuildQueue();
 };
 
+function createCleanFunction(sPath)
+{
+    function clean(doneCleaning)
+    {
+        function deleteRecursive(sPath)
+        {
+            var files = fs.readdirSync(sPath)
+
+            files.forEach(function(file, index)
+            {
+                var sNewPath = sPath + "/" + file;
+
+                if (fs.statSync(sNewPath).isDirectory())
+                {
+                    deleteRecursive(sNewPath);
+                }
+                else
+                {
+                    fs.unlinkSync(sNewPath);
+                }
+            });
+
+            fs.rmdirSync(sPath);
+
+        }
+
+        if (fs.existsSync(sPath))
+        {
+            console.log("Cleaning " + sPath);
+            deleteRecursive(sPath);
+        }
+
+        doneCleaning();
+    };
+    
+    return clean;
+}
+
+function createExecFunction(sPrefix, sCmd, options)
+{
+    var doExec = function(doneRunning)
+    {
+        var childProcess = child_process.exec(sCmd, options, function(err)
+        {
+            rlOut.close();
+            rlErr.close();
+
+            if (!err)
+            {
+                doneRunning();
+            }
+        });
+
+        var rlOut = readline.createInterface({input: childProcess.stdout, output: process.stdout, terminal: false});
+        var rlErr = readline.createInterface({input: childProcess.stderr, output: process.stderr, terminal: false});
+
+        rlOut.on('line', function(sLine)
+        {
+            console.log(sPrefix + sLine);
+        });
+
+        rlErr.on('line', function(sLine)
+        {
+            console.log(sPrefix + sLine);
+        });
+    }
+
+    return doExec;
+}
+
 exports.build = build;
 exports.getMaxParallel = function() {return nMaxParallel;};
 exports.setMaxParallel = function(newMax) {nMaxParallel = newMax;};
-
+exports.createCleanFunction = createCleanFunction;
+exports.createExecFunction = createExecFunction;
