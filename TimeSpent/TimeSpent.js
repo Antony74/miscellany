@@ -18,7 +18,7 @@ else (function()
         "Lexer": [],
         "Parser": [],
         "Semant": [],
-        "Generator": [],
+//        "Generator": [],
     };
 
     var sLog = "";
@@ -91,7 +91,31 @@ else (function()
 //                console.log(arr[n-1].project + ": " + nHours);
             }
 
-            console.log(oSummary);
+            // Sum blocks for each project
+            for(sProject in oSummary)
+            {
+                var arr = oSummary[sProject];
+
+                var commits = 0;
+                var timeSpent = 0.0;
+
+                arr.forEach(function(block)
+                {
+                    commits += block.commits;
+                    timeSpent += block.timeSpent;
+                });
+
+                // The time spent working on the first commit in each block isn't recorded
+                // so estimate it as the average time spent on the other commits
+                timeSpent += (timeSpent / commits) * arr.length;
+
+                // Convert milliseconds to hours
+                timeSpent /= 1000 * 60 * 60;
+                timeSpent = Math.round(timeSpent);
+
+                console.log(sProject + " " + timeSpent + " hours");
+            }
+
        }
     });
 
