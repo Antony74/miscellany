@@ -113,7 +113,7 @@ else (function()
                 timeSpent /= 1000 * 60 * 60;
                 timeSpent = Math.round(timeSpent);
 
-                console.log(sProject + " " + timeSpent + " hours");
+                console.log(sProject + ": " + timeSpent + " hours");
             }
 
        }
