@@ -1,0 +1,25 @@
+{
+  "name": "",
+  "description": "The script in this folder has a dependancy on the Jison parser-generator.  This installs it.",
+  "url": "https://github.com/Antony74/miscellany",
+  "author": {
+    "name": "Antony Bartlett",
+    "email": "akb@akb.me.uk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Antony74/miscellany"
+  },
+  "license": "MIT",
+  "dependencies": {
+	"jison": "0.4.13"
+  },
+  "version": "0.1.0",
+  "engines": {
+    "node": ">= 0.10.1"
+  },
+  "readme": "The script in this folder has a dependancy on the Jison parser-generator.  This installs it.",
+  "bugs": {
+    "url": "https://github.com/Antony74/miscellany/issues"
+  }
+}
