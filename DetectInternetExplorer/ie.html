@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <title>Browser play</title>
+
+</head>
+<body>
+
+<script>
+
+    var ua = window.navigator.userAgent;
+
+    if (ua.indexOf('MSIE ') != -1 || ua.indexOf('Trident/') != -1) // Give 'Edge/' the benefit of the doubt
+    {
+        alert('Hello Internet Explorer user');
+    }
+    else
+    {
+        alert('Thanks for using a real browser');
+    }
+
+</script>
+
+</body>
+</html>
+
