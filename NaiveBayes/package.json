@@ -1,0 +1,18 @@
+{
+    "name": "myProg",
+    "description": "Some throw-away program I want to be able to lint",
+    "author": {
+        "name": "Antony Bartlett",
+        "email": "akb@akb.me.uk"
+    },
+    "dependencies": {
+        "jshint": "2.9.2",
+        "true": "0.0.2"
+    },
+    "license":  "MIT",
+    "scripts": {
+        "lint": "jshint . --exclude node_modules || node node_modules/true/index.js"
+    },
+    "version": "0.0.1",
+    "readme": "Some throw-away program I want to be able to lint"
+}
