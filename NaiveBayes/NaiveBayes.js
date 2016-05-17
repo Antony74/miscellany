@@ -12,6 +12,7 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 			{
 				oWords[sWord] =
 				{
+					word: sWord,
 					count: 1
 				};
 			}
@@ -23,6 +24,14 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 	}
 
 	return {
+
+		addStrings: function(arr, bClassification)
+		{
+			for (var n = 0; n < arr.length; ++n)
+			{
+				this.addString(arr[n], bClassification);
+			}
+		},
 
 		addString: function(s, bClassification)
 		{
@@ -65,14 +74,60 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 			}
 		},
 
-		eachWord: function(callback)
+		eachWord: function(compare, callback)
 		{
+			var arr = [];
+			
 			for (var sWord in oWords)
 			{
-				callback(sWord);
+				arr.push(oWords[sWord]);
 			}
+
+			arr.sort(compare);
+
+			for (var n = 0; n < arr.length; ++n)
+			{
+				var oWord = arr[n];
+				var bRetVal = callback(oWord.word, oWord.count);
+
+				if (bRetVal === false)
+				{
+					break;
+				}
+			}
+		},
+
+		compareCount: function(a, b)
+		{
+			return b.count - a.count;
 		}
 	};
+}
+
+//
+// loadStrings
+//
+
+var fs = require('fs');
+
+function loadStrings(sFilename)
+{
+	var sText = fs.readFileSync( sFilename, {encoding: 'utf8'} );
+	var arrRaw = sText.split('\n');
+	var arrRet = [];
+
+	for (var n = 0; n < arrRaw.length; ++n)
+	{
+		var s = arrRaw[n].trim();
+		if (s.length)
+		{
+			arrRet.push(s);
+		}
+	}
+
+	console.log('Loaded ' + arrRet.length + ' items from ' + sFilename);
+
+	return arrRet;
 }
 
 //
@@ -84,12 +139,22 @@ function isStopWord(s)
 	return (s.length <= 3);
 }
 
+var arrTrue = loadStrings('true.txt');
+var arrFalse = loadStrings('false.txt');
+var arrUnclassified = loadStrings('unclassified.txt');
+
 var classifier = createNewNaiveBayesClassifier(isStopWord);
 
-classifier.addString('The quick brown fox jumps over the lazy dog', null);
+classifier.addStrings(arrTrue, true);
+classifier.addStrings(arrFalse, false);
+classifier.addStrings(arrUnclassified, null);
 
-classifier.eachWord(function(sWord)
+var nWordCount = 0;
+
+classifier.eachWord(classifier.compareCount, function(sWord, nCount)
 {
-	console.log(sWord);
+	console.log(sWord + ': ' + nCount);
+	++nWordCount;
+	return nWordCount < 5;
 });
 
