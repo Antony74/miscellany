@@ -115,8 +115,6 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 
 			if (typeof(oStrings[s]) === 'undefined')
 			{
-				oStrings[s] = {classification: bClassification};
-
 				if (bClassification === true)
 				{
 					getWordsFromString(s, wordsTrue.addWord);
@@ -125,8 +123,47 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 				{
 					getWordsFromString(s, wordsFalse.addWord);
 				}
-
+				else
+				{
+					// Hack - this line should be one level up, but there's some dodgy repeatition of strings
+					// going on in the example data
+					oStrings[s] = {classification: bClassification};
+				}
 			}
+		},
+
+		classify: function()
+		{
+			var arr = [];
+
+			function addWord(sWord)
+			{
+				arr.push(sWord);
+			}
+
+			for (var sString in oStrings)
+			{
+				if (oStrings[sString].classification === null)
+				{
+					arr = [];
+
+					getWordsFromString(sString, addWord);
+
+					var dLogPtrue = 0.0;
+					var dLogPfalse = 0.0;
+
+					for (var nWord = 0; nWord < arr.length; ++nWord)
+					{
+						var sWord = arr[nWord];
+						dLogPtrue  += wordsTrue.logOfProbabilityOfWord(sWord);
+						dLogPfalse += wordsFalse.logOfProbabilityOfWord(sWord);
+					}
+
+					console.log (sString.slice(0,20) + ' ' + dLogPtrue + ' vs ' + dLogPfalse + ' classified ' + (dLogPtrue > dLogPfalse));
+				}
+			}
+
+			return arr;
 		},
 
 		eachWord: function(bClassification, compare, callback)
@@ -215,6 +252,9 @@ classifier.addStrings(arrTrue, true);
 classifier.addStrings(arrFalse, false);
 classifier.addStrings(arrUnclassified, null);
 
+classifier.classify();
+
+/*
 var nWordCount = 0;
 console.log('');
 
@@ -234,4 +274,5 @@ classifier.eachWord(false, classifier.compareCount, function(sWord, nCount)
 	++nWordCount;
 	return nWordCount < 5;
 });
+*/
 
