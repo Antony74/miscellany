@@ -2,25 +2,91 @@
 function createNewNaiveBayesClassifier(fnIsStopWord)
 {
 	var oStrings = {};
-	var oWords = {};
+	var wordsTrue = createNewWordCollection();
+	var wordsFalse = createNewWordCollection();
 
-	function addWord(sWord)
+	function createNewWordCollection()
 	{
-		if (!fnIsStopWord(sWord))
-		{
-			if (typeof(oWords[sWord]) === 'undefined')
+		var oWords = {};
+		var nCount = 0;
+
+		return {
+			addWord: function(sWord)
 			{
-				oWords[sWord] =
+				if (!fnIsStopWord(sWord))
 				{
-					word: sWord,
-					count: 1
-				};
-			}
-			else
+					++nCount;
+
+					if (typeof(oWords[sWord]) === 'undefined')
+					{
+						oWords[sWord] =
+						{
+							word: sWord,
+							count: 1
+						};
+					}
+					else
+					{
+						++oWords[sWord].count;
+					}
+				}
+			},
+
+			asArray: function()
 			{
-				++oWords[sWord].count;
+				var arr = [];
+
+				for (var sWord in oWords)
+				{
+					arr.push(oWords[sWord]);
+				}
+
+				return arr;
+			},
+
+			logOfProbabilityOfWord: function(sWord)
+			{
+				var p;
+
+				if (typeof(oWords[sWord]) === 'undefined')
+				{
+					p = 1 / nCount;
+				}
+				else
+				{
+					p = (1 + oWords[sWord].count) / nCount;
+				}
+
+				return Math.log(p);
+			}
+		};
+	}
+
+	function getWordsFromString(s, addWord)
+	{
+		var nWordStart = 0;
+		var arrWords = [];
+
+		for (var n = 0; n < s.length; ++n)
+		{
+			var nChar = s.charAt(n);
+
+			if (!( (nChar >= 'a' && nChar <= 'z') || (nChar >= '0' && nChar <= '9') ))
+			{
+				if (nWordStart !== n)
+				{
+					addWord(s.substr(nWordStart, n-nWordStart));
+				}
+				nWordStart = n + 1;
 			}
 		}
+
+		if (nWordStart !== n - 1)
+		{
+			addWord(s.substr(nWordStart));
+		}
+
+		return arrWords;
 	}
 
 	return {
@@ -49,46 +115,46 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 
 			if (typeof(oStrings[s]) === 'undefined')
 			{
-				oStrings[s] = {};
+				oStrings[s] = {classification: bClassification};
 
-				var nWordStart = 0;
-
-				for (var n = 0; n < s.length; ++n)
+				if (bClassification === true)
 				{
-					var nChar = s.charAt(n);
-
-					if (!( (nChar >= 'a' && nChar <= 'z') || (nChar >= '0' && nChar <= '9') ))
-					{
-						if (nWordStart !== n)
-						{
-							addWord(s.substr(nWordStart, n-nWordStart));
-						}
-						nWordStart = n + 1;
-					}
+					getWordsFromString(s, wordsTrue.addWord);
+				}
+				else if (bClassification === false)
+				{
+					getWordsFromString(s, wordsFalse.addWord);
 				}
 
-				if (nWordStart !== n - 1)
-				{
-					addWord(s.substr(nWordStart));
-				}
 			}
 		},
 
-		eachWord: function(compare, callback)
+		eachWord: function(bClassification, compare, callback)
 		{
-			var arr = [];
-			
-			for (var sWord in oWords)
+			var oWords = {};
+
+			if (bClassification === true)
 			{
-				arr.push(oWords[sWord]);
+				oWords = wordsTrue;
+			}
+			else if (bClassification === false)
+			{
+				oWords = wordsFalse;
+			}
+			else
+			{
+				throw 'eachWord(): first parameter is invalid';
 			}
 
+			var arr = oWords.asArray();
+			
 			arr.sort(compare);
 
 			for (var n = 0; n < arr.length; ++n)
 			{
 				var oWord = arr[n];
-				var bRetVal = callback(oWord.word, oWord.count);
+				var sWord = oWord.word;
+				var bRetVal = callback(sWord, oWords.logOfProbabilityOfWord(sWord));
 
 				if (bRetVal === false)
 				{
@@ -150,8 +216,19 @@ classifier.addStrings(arrFalse, false);
 classifier.addStrings(arrUnclassified, null);
 
 var nWordCount = 0;
+console.log('');
 
-classifier.eachWord(classifier.compareCount, function(sWord, nCount)
+classifier.eachWord(true, classifier.compareCount, function(sWord, nCount)
+{
+	console.log(sWord + ': ' + nCount);
+	++nWordCount;
+	return nWordCount < 5;
+});
+
+nWordCount = 0;
+console.log('');
+
+classifier.eachWord(false, classifier.compareCount, function(sWord, nCount)
 {
 	console.log(sWord + ': ' + nCount);
 	++nWordCount;
