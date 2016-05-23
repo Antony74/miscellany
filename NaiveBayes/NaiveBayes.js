@@ -24,6 +24,8 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 							word: sWord,
 							count: 1
 						};
+
+    					++nCount; // Laplacian/additive smoothing
 					}
 					else
 					{
@@ -54,6 +56,7 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 				}
 				else
 				{
+                    // The +1 is Laplacian/additive smoothing
 					p = (1 + oWords[sWord].count) / nCount;
 				}
 
@@ -71,7 +74,7 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 		{
 			var nChar = s.charAt(n);
 
-			if (!( (nChar >= 'a' && nChar <= 'z') || (nChar >= '0' && nChar <= '9') ))
+			if (nChar === ' ')
 			{
 				if (nWordStart !== n)
 				{
@@ -112,6 +115,12 @@ function createNewNaiveBayesClassifier(fnIsStopWord)
 			}
 
 			s = s.toLowerCase();
+            s = s.replace('. ', ' ');
+            s = s.replace(': ', ' ');
+            s = s.replace('?', ' ');
+            s = s.replace('!', ' ');
+            s = s.replace(';', ' ');
+            s = s.replace(',', ' ');
 
 			if (typeof(oStrings[s]) === 'undefined')
 			{
