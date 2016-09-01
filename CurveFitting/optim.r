@@ -26,8 +26,6 @@ f = function(params)
 	g = params[7];
 	h = params[8];
 
-	tValues = params[9:length(params)];
-
 	cubic = function(t)
 	{
 		x = (a * t * t * t) + (b * t * t) + (cc * t) + d;
@@ -35,24 +33,24 @@ f = function(params)
 		return(c(x, y));
 	};
 
-	comparision = cbind(points, t = tValues);
-
 	distances = 0;
 
-	lapply(1:nrow(comparision), function(nRow)
+	lapply(1:nrow(points), function(nRow)
 	{
-		targetX = comparision$x[nRow];
-		targetY = comparision$y[nRow];
-		t = comparision$t[nRow];
+		targetX = points$x[nRow];
+		targetY = points$y[nRow];
 
-		xy = cubic(t);
+		distance = vapply(seq(from = 0, to = 1, by = 0.1), function(t)
+		{
+			xy = cubic(t);
 
-		x = xy[1] - targetX;
-		y = xy[2] - targetY;
+			x = xy[1] - targetX;
+			y = xy[2] - targetY;
 
-		distance = (x * x) + (y * y);
+			return ((x * x) + (y * y));
+		}, 0);
 
-		distances <<- distances + distance;
+		distances <<- distances + min(as.vector(distance));
 	});
 
 	start = cubic(0);
@@ -66,11 +64,10 @@ f = function(params)
 	return(distances + (sqrt(distance)^1.5));
 }
 
-params = rep(0.5, 8 + nrow(points));
+params = rep(0.5, 8);
 result = optim(params, f,
-			   method = "L-BFGS-B",
-			   lower = c(rep(-Inf,8), rep(0, nrow(points))),
-			   upper = c(rep(+Inf,8), rep(1, nrow(points))));
+			   method = "CG",
+			   control = list(maxit = 300));
 
 cat(paste("a = ", result$par[1]), ';\n', sep="");
 cat(paste("b = ", result$par[2]), ';\n', sep="");
