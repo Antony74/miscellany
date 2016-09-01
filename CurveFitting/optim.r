@@ -1,3 +1,6 @@
+#
+# Define the points we'd like to fit a curve to
+#
 
 points = data.frame(numeric(0), numeric(0));
 
@@ -14,6 +17,11 @@ addPoint( 142 , 119 );
 addPoint( 117 , 169 );
 addPoint( 86 , 214 );
 addPoint( 40 , 200 );names(points) = c("x", "y");
+
+#
+# The all important function which the optimizer calls repeatedly,
+# so we can rate each attempt to fit the data to the curve
+#
 
 f = function(params)
 {
@@ -63,6 +71,10 @@ f = function(params)
 
 	return(distances + (sqrt(distance)^1.5));
 }
+
+#
+# Kick the optimiser off and display results
+#
 
 params = rep(0.5, 8);
 result = optim(params, f,
