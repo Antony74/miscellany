@@ -1,0 +1,33 @@
+/* Example command line: (or use svg instead of png) */
+/* dot dot.txt -Tpng -o dot.png                      */
+
+digraph {
+    
+    {rank=same; a1 a2 a3 a4 a5i a5ii a6i a6ii}
+    {rank=same; e1 e2 e3 e4 e5i e5ii e6i e6ii}
+
+    a1   ->b1   ->c1   ->d1   ->e1   ->f1   ->g1   ->h1   ->i1   ->j1   ->k1   ->l1   ->m1              [weight=10]
+    a2   ->b2   ->c2   ->d2   ->e2   ->f2   ->g2   ->h2   ->i2   ->j2   ->k2   ->l2   ->m2  ->n2        [weight=10]
+    a3   ->b3   ->c3   ->d3   ->e3   ->f3   ->g3   ->h3   ->i3   ->j3   ->k3   ->l3   ->m3              [weight=10]
+    a4   ->b4   ->c4   ->d4   ->e4   ->f4   ->g4   ->h4   ->i4   ->j4   ->k4   ->l4   ->m4  ->n4        [weight=10]
+    a5i  ->b5i  ->c5i  ->d5i  ->e5i  ->f5i  ->g5i  ->h5i  ->i5i  ->j5i  ->k5i  ->l5i  ->m5i ->n5i ->o5i [weight=10]
+    a5ii ->b5ii ->c5ii ->d5ii ->e5ii ->f5ii ->g5ii ->h5ii ->i5ii ->j5ii ->k5ii ->l5ii ->m5ii            [weight=10]
+    a6i  ->b6i  ->c6i  ->d6i  ->e6i  ->f6i  ->g6i  ->h6i  ->i6i  ->j6i  ->k6i  ->l6i                    [weight=10]
+    a6ii ->b6ii ->c6ii ->d6ii ->e6ii ->f6ii ->g6ii ->h6ii ->i6ii                                        [weight=10]
+    c3   ->x1
+    c6ii ->x1
+    e3   ->x2
+    x1   ->x2
+    i4   ->x3
+    j5i  ->x3
+    e2   ->x4
+    f6ii ->x4
+    k4   ->x4
+    g6ii ->x5
+    k5ii ->x5
+    l5ii ->x6
+    h2   ->x6
+    i3   ->x7
+    k4   ->x8
+    i6ii ->x8
+}
