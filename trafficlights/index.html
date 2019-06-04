@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.dot {
+  height: 100px;
+  width: 100px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+</style>
+</head>
+<body>
+
+<div style="text-align:center">
+  <h1>Traffic lights</h1>
+  <div id="red" class="dot"></div><br>
+  <div id="amber" class="dot"></div><br>
+  <div id="green" class="dot"></div><br>
+</div>
+
+<script>
+
+var n = 0;
+var red = document.getElementById('red');
+var amber = document.getElementById('amber');
+var green = document.getElementById('green');
+
+function setState() {
+    switch (n % 4) {
+	case 0:
+    	red.style.backgroundColor = 'red';
+    	amber.style.backgroundColor = 'grey';
+        green.style.backgroundColor = 'grey';
+        break;
+    case 1:
+        red.style.backgroundColor = 'red';
+    	amber.style.backgroundColor = 'yellow';
+        green.style.backgroundColor = 'grey';
+        break;
+    case 2:
+        red.style.backgroundColor = 'grey';
+    	amber.style.backgroundColor = 'grey';
+        green.style.backgroundColor = 'lime';
+        break;
+    case 3:
+        red.style.backgroundColor = 'grey';
+    	amber.style.backgroundColor = 'yellow';
+        green.style.backgroundColor = 'grey';
+        break;
+    }
+}
+
+setState(n);
+
+setInterval(function() {
+	++n;
+    setState(n);
+}, 2000);
+
+</script>
+
+</body>
+</html> 
