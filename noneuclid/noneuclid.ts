@@ -23,7 +23,7 @@ const gsin = (K: number) => {
 const gCosineLaw = (K) => {
   if (K === 0) {
     return (a, b, C) => {
-      return Math.acos( (a * a) + (b * b) - (2 * a * b * Math.cos(C)));
+      return Math.sqrt( (a * a) + (b * b) - (2 * a * b * Math.cos(C)));
     }
   } else if (K > 0) {
     const r = Math.sqrt(K);
