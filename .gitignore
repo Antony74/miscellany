@@ -1,0 +1,6 @@
+**/node_modules/
+motion/*.png
+motion/*.csv
+NaiveBayes/Mandrill.xlsx
+NaiveBayes/*.txt
+graphplay/dot.png
